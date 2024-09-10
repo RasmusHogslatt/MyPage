@@ -1,109 +1,114 @@
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
-#[derive(serde::Deserialize, serde::Serialize)]
-#[serde(default)] // if we add new fields, give them default values when deserializing old state
-pub struct TemplateApp {
-    // Example stuff:
-    label: String,
+use std::default;
 
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+use egui::{include_image, ImageSource};
+use egui_extras::install_image_loaders;
+
+use crate::{Education, Experience, ExperienceWidget, SIDE_PANEL_WIDTH};
+
+#[derive(serde::Deserialize, serde::Serialize)]
+#[serde(default)]
+pub struct PersonalPortfolio<'a> {
+    name: String,
+    title: String,
+    about_me: String,
+    skills: Vec<String>,
+    experiences: Vec<Experience>,
+    education: Vec<Education>,
+    contact_email: String,
+    #[serde(skip)]
+    images: LoadedImages<'a>,
 }
 
-impl Default for TemplateApp {
+pub struct LoadedImages<'a> {
+    pub images: Vec<ImageSource<'a>>,
+}
+
+impl<'a> Default for LoadedImages<'a> {
     fn default() -> Self {
+        let saab = egui::include_image!("../assets/saab.png");
+        let mut images = Vec::new();
+        images.push(saab);
+        LoadedImages { images }
+    }
+}
+
+impl<'a> Default for PersonalPortfolio<'a> {
+    fn default() -> Self {
+        let mut experiences: Vec<Experience> = Vec::new();
+        experiences.push(Experience {
+            company: "Saab AB".to_string(),
+            position: "Software Engineer".to_string(),
+            start: "2024 June".to_string(),
+            end: "Current".to_string(),
+            description: "asdfasd".to_string(),
+            image_index: 0,
+        });
+
+        // let mut images = LoadedImages::default();
+        // images
+        //     .images
+        //     .push(ImageSource::Uri("../assets/saab.png".into()));
+
         Self {
-            // Example stuff:
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            name: "Rasmus Hogslätt".to_owned(),
+            title: "Software developer".to_owned(),
+            about_me: "Write a brief introduction about yourself here.".to_owned(),
+            skills: vec![
+                "Skill 1".to_owned(),
+                "Skill 2".to_owned(),
+                "Skill 3".to_owned(),
+            ],
+            experiences,
+            education: vec![Education {
+                institution: "Linköping University".to_owned(),
+                degree: "Technology of Media".to_owned(),
+                year: "2024".to_owned(),
+            }],
+            contact_email: "r.hogslatt@gmail.com".to_owned(),
+            images: LoadedImages::default(),
         }
     }
 }
 
-impl TemplateApp {
-    /// Called once before the first frame.
+impl<'a> PersonalPortfolio<'a> {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // This is also where you can customize the look and feel of egui using
-        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
-
-        // Load previous app state (if any).
-        // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
-
         Default::default()
     }
 }
 
-impl eframe::App for TemplateApp {
-    /// Called by the frame work to save state before shutdown.
+impl<'a> eframe::App for PersonalPortfolio<'a> {
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
     }
-
-    /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
-
-            egui::menu::bar(ui, |ui| {
-                // NOTE: no File->Quit on web pages!
-                let is_web = cfg!(target_arch = "wasm32");
-                if !is_web {
-                    ui.menu_button("File", |ui| {
-                        if ui.button("Quit").clicked() {
-                            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                        }
-                    });
-                    ui.add_space(16.0);
+        install_image_loaders(ctx);
+        egui::SidePanel::left("left_panel")
+            .exact_width(SIDE_PANEL_WIDTH)
+            .show(ctx, |ui| {
+                ui.heading("Education");
+                ui.heading("Experience");
+                for experience in &self.experiences {
+                    ui.add(ExperienceWidget::new(experience, &self.images));
                 }
-
-                egui::widgets::global_dark_light_mode_buttons(ui);
             });
-        });
+
+        egui::SidePanel::right("right_panel")
+            .exact_width(SIDE_PANEL_WIDTH)
+            .show(ctx, |ui| {
+                ui.heading("Projects");
+                ui.image(egui::include_image!("../assets/saab.png"));
+            });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
-
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
-            });
-
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                self.value += 1.0;
-            }
-
-            ui.separator();
-
-            ui.add(egui::github_link_file!(
-                "https://github.com/emilk/eframe_template/blob/main/",
-                "Source code."
-            ));
-
-            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
-                powered_by_egui_and_eframe(ui);
-                egui::warn_if_debug_build(ui);
-            });
+            ui.with_layout(
+                egui::Layout::top_down_justified(egui::Align::Center),
+                |ui| {
+                    ui.heading(&self.name);
+                },
+            );
         });
     }
-}
-
-fn powered_by_egui_and_eframe(ui: &mut egui::Ui) {
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 0.0;
-        ui.label("Powered by ");
-        ui.hyperlink_to("egui", "https://github.com/emilk/egui");
-        ui.label(" and ");
-        ui.hyperlink_to(
-            "eframe",
-            "https://github.com/emilk/egui/tree/master/crates/eframe",
-        );
-        ui.label(".");
-    });
 }
