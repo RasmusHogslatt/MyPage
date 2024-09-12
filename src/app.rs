@@ -1,9 +1,11 @@
 use std::default;
 
-use egui::{include_image, ImageSource};
+use egui::{global_dark_light_mode_switch, include_image, ImageSource};
 use egui_extras::install_image_loaders;
 
-use crate::{Education, Experience, ExperienceWidget, SIDE_PANEL_WIDTH};
+use crate::{
+    education, Education, EducationWidget, Experience, ExperienceWidget, SIDE_PANEL_WIDTH,
+};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -12,8 +14,10 @@ pub struct PersonalPortfolio<'a> {
     title: String,
     about_me: String,
     skills: Vec<String>,
+    #[serde(skip)]
     experiences: Vec<Experience>,
-    education: Vec<Education>,
+    #[serde(skip)]
+    educations: Vec<Education>,
     contact_email: String,
     #[serde(skip)]
     images: LoadedImages<'a>,
@@ -26,8 +30,14 @@ pub struct LoadedImages<'a> {
 impl<'a> Default for LoadedImages<'a> {
     fn default() -> Self {
         let saab = egui::include_image!("../assets/saab.png");
+        let liu = egui::include_image!("../assets/liu.png");
+        let voysys = egui::include_image!("../assets/voysys.png");
+        let easylaser = egui::include_image!("../assets/easylaser.png");
         let mut images = Vec::new();
         images.push(saab);
+        images.push(liu);
+        images.push(voysys);
+        images.push(easylaser);
         LoadedImages { images }
     }
 }
@@ -38,16 +48,27 @@ impl<'a> Default for PersonalPortfolio<'a> {
         experiences.push(Experience {
             company: "Saab AB".to_string(),
             position: "Software Engineer".to_string(),
-            start: "2024 June".to_string(),
+            start: "June 2024".to_string(),
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 0,
         });
-
-        // let mut images = LoadedImages::default();
-        // images
-        //     .images
-        //     .push(ImageSource::Uri("../assets/saab.png".into()));
+        experiences.push(Experience {
+            company: "Voysys".to_string(),
+            position: "Software Engineer".to_string(),
+            start: "June 2024".to_string(),
+            end: "Current".to_string(),
+            description: "asdfasd".to_string(),
+            image_index: 2,
+        });
+        experiences.push(Experience {
+            company: "Easy Laser".to_string(),
+            position: "Software Engineer".to_string(),
+            start: "June 2024".to_string(),
+            end: "Current".to_string(),
+            description: "asdfasd".to_string(),
+            image_index: 3,
+        });
 
         Self {
             name: "Rasmus Hogslätt".to_owned(),
@@ -59,10 +80,13 @@ impl<'a> Default for PersonalPortfolio<'a> {
                 "Skill 3".to_owned(),
             ],
             experiences,
-            education: vec![Education {
-                institution: "Linköping University".to_owned(),
+            educations: vec![Education {
+                university: "Linköping University".to_string(),
                 degree: "Technology of Media".to_owned(),
-                year: "2024".to_owned(),
+                start: "2019".to_string(),
+                end: "2024".to_string(),
+                description: "afdasf".to_string(),
+                image_index: 1,
             }],
             contact_email: "r.hogslatt@gmail.com".to_owned(),
             images: LoadedImages::default(),
@@ -85,10 +109,18 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
     }
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         install_image_loaders(ctx);
+
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            global_dark_light_mode_switch(ui);
+        });
+
         egui::SidePanel::left("left_panel")
             .exact_width(SIDE_PANEL_WIDTH)
             .show(ctx, |ui| {
                 ui.heading("Education");
+                for education in &self.educations {
+                    ui.add(EducationWidget::new(education, &self.images));
+                }
                 ui.heading("Experience");
                 for experience in &self.experiences {
                     ui.add(ExperienceWidget::new(experience, &self.images));
