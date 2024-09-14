@@ -1,8 +1,11 @@
 use egui::{Color32, Hyperlink, Image, RichText, TextBuffer, TextWrapMode, Vec2, Widget};
 
+use uuid::{uuid, Uuid};
+
 use crate::{
     app::{open_pdf, LoadedImages},
-    BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, SIZE_IMAGE_HEIGHT, SIZE_IMAGE_WIDTH,
+    BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_HEIGHT,
+    SIZE_IMAGE_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -15,6 +18,9 @@ pub struct Education {
     pub grade_score: String,
     pub image_index: usize,
     pub academic_record_path: String,
+    pub has_link: bool,
+    #[serde(skip)]
+    pub uuid: uuid::Uuid,
 }
 
 // New struct to wrap Experience and LoadedImages
@@ -35,6 +41,7 @@ impl<'a> EducationWidget<'a> {
 impl<'a> Widget for EducationWidget<'a> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         ui.group(|ui| {
+            ui.set_width(GROUP_WIDTH);
             if let Some(image_source) = self.loaded_images.images.get(self.education.image_index) {
                 let mut bg_fill: u8 = 0;
                 if ui.visuals().dark_mode {
@@ -57,13 +64,15 @@ impl<'a> Widget for EducationWidget<'a> {
                 ui[1].label(RichText::new(&self.education.grade_score).strong())
             });
             egui::ScrollArea::vertical()
-                .id_source(format!("{}", self.education.image_index))
+                .id_source(format!("{}", self.education.uuid))
                 .auto_shrink(true)
                 .show(ui, |ui| {
                     ui.label(self.education.description.clone());
                 });
-            if ui.add(Hyperlink::new("Academic Record")).clicked() {
-                open_pdf(self.education.academic_record_path.clone());
+            if self.education.has_link {
+                if ui.add(Hyperlink::new("Academic Record")).clicked() {
+                    open_pdf(self.education.academic_record_path.clone());
+                }
             }
         })
         .response

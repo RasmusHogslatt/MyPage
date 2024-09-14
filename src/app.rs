@@ -2,8 +2,12 @@ use std::{fmt::format, process::Command};
 
 use egui::{global_dark_light_mode_switch, ImageSource};
 use egui_extras::install_image_loaders;
+use uuid::Uuid;
 
-use crate::{Education, EducationWidget, Experience, ExperienceWidget, SIDE_PANEL_WIDTH};
+use crate::{
+    Education, EducationWidget, Experience, ExperienceWidget, Project, ProjectWidget,
+    SIDE_PANEL_WIDTH,
+};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -16,6 +20,8 @@ pub struct PersonalPortfolio<'a> {
     experiences: Vec<Experience>,
     #[serde(skip)]
     educations: Vec<Education>,
+    #[serde(skip)]
+    projects: Vec<Project>,
     contact_email: String,
     #[serde(skip)]
     images: LoadedImages<'a>,
@@ -50,6 +56,9 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 0,
+            has_link: false,
+            link_path: "".to_string(),
+            uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
             company: "Voysys".to_string(),
@@ -58,6 +67,9 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 2,
+            has_link: false,
+            link_path: "".to_string(),
+            uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
             company: "Easy Laser".to_string(),
@@ -66,6 +78,49 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 3,
+            has_link: false,
+            link_path: "".to_string(),
+            uuid: Uuid::new_v4(),
+        });
+        experiences.push(Experience {
+            company: "Linköping University".to_string(),
+            position: "Research assistant".to_string(),
+            start: "June 2024".to_string(),
+            end: "Current".to_string(),
+            description: "Worked through summer and part time during coming semesters on the open source project Inviwo. It is an open source scientific visualization software developed mainly in C++ and OpenGL".to_string(),
+            image_index: 1,
+            has_link: false,
+            link_path: "".to_string(),
+            uuid: Uuid::new_v4(),
+        });
+        let mut educations = Vec::new();
+        educations.push(Education {
+            university: "Linköping University".to_string(),
+            degree: "MSc Technology of Media".to_owned(),
+            start: "2019".to_string(),
+            end: "2024".to_string(),
+            description: "A degree similar to computer science, with stronger emphasis on the math and coding of computer graphics.".to_string(),
+            grade_score: "4.0/5.0".to_string(),
+            image_index: 1,
+            academic_record_path: "assets/Intyg.pdf".to_string(),
+            has_link: true,
+            uuid: Uuid::new_v4(),
+        });
+        let mut projects = Vec::new();
+        projects.push(Project {
+            title: "Visualizing RC car in Mixed Reality".to_string(),
+            description: "sfaf".to_string(),
+            has_image: true,
+            has_link: true,
+            link_path: "".to_string(),
+            image_index: 2,
+            tools: vec![
+                "Rust".to_string(),
+                "C++".to_string(),
+                "MR".to_string(),
+                "Android".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
         });
 
         Self {
@@ -78,16 +133,8 @@ impl<'a> Default for PersonalPortfolio<'a> {
                 "Skill 3".to_owned(),
             ],
             experiences,
-            educations: vec![Education {
-                university: "Linköping University".to_string(),
-                degree: "MSc Technology of Media".to_owned(),
-                start: "2019".to_string(),
-                end: "2024".to_string(),
-                description: "A degree similar to computer science, with stronger emphasis on the math and coding of computer graphics.".to_string(),
-                grade_score: "4.0/5.0".to_string(),
-                image_index: 1,
-                academic_record_path: "assets/Intyg.pdf".to_string()
-            }],
+            educations,
+            projects,
             contact_email: "r.hogslatt@gmail.com".to_owned(),
             images: LoadedImages::default(),
         }
@@ -110,28 +157,39 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         install_image_loaders(ctx);
 
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            global_dark_light_mode_switch(ui);
-        });
+        egui::TopBottomPanel::top("top_panel")
+            .resizable(false)
+            .show(ctx, |ui| {
+                global_dark_light_mode_switch(ui);
+            });
 
         egui::SidePanel::left("left_panel")
             .exact_width(SIDE_PANEL_WIDTH)
+            .resizable(false)
             .show(ctx, |ui| {
-                ui.heading("Education");
-                for education in &self.educations {
-                    ui.add(EducationWidget::new(education, &self.images));
-                }
-                ui.heading("Experience");
-                for experience in &self.experiences {
-                    ui.add(ExperienceWidget::new(experience, &self.images));
-                }
+                egui::ScrollArea::vertical()
+                    .id_source("left_scroll_area")
+                    .auto_shrink(true)
+                    .show(ui, |ui| {
+                        ui.heading("Education");
+                        for education in &self.educations {
+                            ui.add(EducationWidget::new(education, &self.images));
+                        }
+                        ui.heading("Experience");
+                        for experience in &self.experiences {
+                            ui.add(ExperienceWidget::new(experience, &self.images));
+                        }
+                    });
             });
 
         egui::SidePanel::right("right_panel")
             .exact_width(SIDE_PANEL_WIDTH)
+            .resizable(false)
             .show(ctx, |ui| {
                 ui.heading("Projects");
-                ui.image(egui::include_image!("../assets/saab.png"));
+                for project in &self.projects {
+                    ui.add(ProjectWidget::new(project, &self.images));
+                }
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {

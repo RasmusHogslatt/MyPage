@@ -1,7 +1,8 @@
-use egui::{Color32, Image, RichText, Vec2, Widget};
+use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
 
 use crate::{
-    app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, SIZE_IMAGE_HEIGHT,
+    app::{open_pdf, LoadedImages},
+    BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_HEIGHT,
     SIZE_IMAGE_WIDTH,
 };
 
@@ -13,6 +14,10 @@ pub struct Experience {
     pub end: String,
     pub description: String,
     pub image_index: usize,
+    pub has_link: bool,
+    pub link_path: String,
+    #[serde(skip)]
+    pub uuid: uuid::Uuid,
 }
 
 // New struct to wrap Experience and LoadedImages
@@ -33,6 +38,7 @@ impl<'a> ExperienceWidget<'a> {
 impl<'a> Widget for ExperienceWidget<'a> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         ui.group(|ui| {
+            ui.set_width(GROUP_WIDTH);
             if let Some(image_source) = self.loaded_images.images.get(self.experience.image_index) {
                 let mut bg_fill: u8 = 0;
                 if ui.visuals().dark_mode {
@@ -54,11 +60,16 @@ impl<'a> Widget for ExperienceWidget<'a> {
                 ui[0].label(&self.experience.position);
             });
             egui::ScrollArea::vertical()
-                .id_source(format!("{}", self.experience.image_index))
+                .id_source(format!("{}", self.experience.uuid))
                 .auto_shrink(true)
                 .show(ui, |ui| {
                     ui.label(self.experience.description.clone());
                 });
+            if self.experience.has_link {
+                if ui.add(Hyperlink::new("Academic Record")).clicked() {
+                    open_pdf(self.experience.link_path.clone());
+                }
+            }
         })
         .response
     }
