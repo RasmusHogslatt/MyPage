@@ -53,6 +53,12 @@ impl<'a> Widget for ExperienceWidget<'a> {
                 ));
                 ui[0].label(&self.experience.position);
             });
+            egui::ScrollArea::vertical()
+                .id_source(format!("{}", self.experience.image_index))
+                .auto_shrink(true)
+                .show(ui, |ui| {
+                    ui.label(self.experience.description.clone());
+                });
         })
         .response
     }

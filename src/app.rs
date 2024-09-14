@@ -1,11 +1,9 @@
-use std::default;
+use std::{fmt::format, process::Command};
 
-use egui::{global_dark_light_mode_switch, include_image, ImageSource};
+use egui::{global_dark_light_mode_switch, ImageSource};
 use egui_extras::install_image_loaders;
 
-use crate::{
-    education, Education, EducationWidget, Experience, ExperienceWidget, SIDE_PANEL_WIDTH,
-};
+use crate::{Education, EducationWidget, Experience, ExperienceWidget, SIDE_PANEL_WIDTH};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -82,11 +80,13 @@ impl<'a> Default for PersonalPortfolio<'a> {
             experiences,
             educations: vec![Education {
                 university: "Linköping University".to_string(),
-                degree: "Technology of Media".to_owned(),
+                degree: "MSc Technology of Media".to_owned(),
                 start: "2019".to_string(),
                 end: "2024".to_string(),
-                description: "afdasf".to_string(),
+                description: "A degree similar to computer science, with stronger emphasis on the math and coding of computer graphics.".to_string(),
+                grade_score: "4.0/5.0".to_string(),
                 image_index: 1,
+                academic_record_path: "assets/Intyg.pdf".to_string()
             }],
             contact_email: "r.hogslatt@gmail.com".to_owned(),
             images: LoadedImages::default(),
@@ -142,5 +142,44 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                 },
             );
         });
+    }
+}
+
+pub fn open_pdf(file_path: String) {
+    #[cfg(target_arch = "wasm32")]
+    {
+        if let Some(window) = web_sys::window() {
+            let _ = window.open_with_url_and_target(format!("/{}", &file_path), "_blank");
+        }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let path = std::path::Path::new(&file_path);
+        if path.exists() {
+            #[cfg(target_os = "windows")]
+            {
+                Command::new("cmd")
+                    .args(&["/C", "start", "", &file_path])
+                    .spawn()
+                    .expect("Failed to open PDF");
+            }
+            #[cfg(target_os = "macos")]
+            {
+                Command::new("open")
+                    .arg(file_path)
+                    .spawn()
+                    .expect("Failed to open PDF");
+            }
+            #[cfg(target_os = "linux")]
+            {
+                Command::new("xdg-open")
+                    .arg(&self.resume_pdf_path)
+                    .spawn()
+                    .expect("Failed to open PDF");
+            }
+        } else {
+            eprintln!("PDF file not found: {}", file_path);
+        }
     }
 }
