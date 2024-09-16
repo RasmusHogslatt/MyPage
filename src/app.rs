@@ -1,12 +1,13 @@
 use std::{fmt::format, process::Command};
 
+use egui::special_emojis::*;
 use egui::{global_dark_light_mode_switch, ImageSource};
 use egui_extras::install_image_loaders;
 use uuid::Uuid;
 
 use crate::{
-    Education, EducationWidget, Experience, ExperienceWidget, Project, ProjectWidget,
-    SIDE_PANEL_WIDTH,
+    AboutMe, AboutMeWidget, ContentType, Education, EducationWidget, Experience, ExperienceWidget,
+    Info, InfoWidget, Project, ProjectWidget, SIDE_PANEL_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -14,8 +15,11 @@ use crate::{
 pub struct PersonalPortfolio<'a> {
     name: String,
     title: String,
-    about_me: String,
     skills: Vec<String>,
+    #[serde(skip)]
+    info: Info,
+    #[serde(skip)]
+    about_me: AboutMe,
     #[serde(skip)]
     experiences: Vec<Experience>,
     #[serde(skip)]
@@ -37,11 +41,21 @@ impl<'a> Default for LoadedImages<'a> {
         let liu = egui::include_image!("../assets/liu.png");
         let voysys = egui::include_image!("../assets/voysys.png");
         let easylaser = egui::include_image!("../assets/easylaser.png");
+        let me = egui::include_image!("../assets/me_lego2.png");
+        let donaldduck = egui::include_image!("../assets/donaldduck.png");
+        let crab = egui::include_image!("../assets/crab.png");
+        let mcpt = egui::include_image!("../assets/mcpt.png");
+        let pw = egui::include_image!("../assets/pw.png");
         let mut images = Vec::new();
         images.push(saab);
         images.push(liu);
         images.push(voysys);
         images.push(easylaser);
+        images.push(me);
+        images.push(donaldduck);
+        images.push(crab);
+        images.push(mcpt);
+        images.push(pw);
         LoadedImages { images }
     }
 }
@@ -109,10 +123,10 @@ impl<'a> Default for PersonalPortfolio<'a> {
         let mut projects = Vec::new();
         projects.push(Project {
             title: "Visualizing RC car in Mixed Reality".to_string(),
-            description: "sfaf".to_string(),
+            description: "Visualization and control of an RC car in Mixed Reality. Implemented in Rust, involving contributions to the open source Bevy Engine. This was part of my master's thesis.".to_string(),
             has_image: true,
             has_link: true,
-            link_path: "".to_string(),
+            link_paths: vec![("assets/MasterThesis.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://www.youtube.com/watch?v=vJKHNgr7sD4".to_string(), "Video".to_string(), ContentType::Video)],
             image_index: 2,
             tools: vec![
                 "Rust".to_string(),
@@ -122,11 +136,57 @@ impl<'a> Default for PersonalPortfolio<'a> {
             ],
             uuid: Uuid::new_v4(),
         });
+        projects.push(Project {
+            title: "Monte Carlo Pathtracer".to_string(),
+            description: "A Monte Carlo pathtracer that renders realisitc reflections, refractions and direct and indirect illumination of diffuse objects.".to_string(),
+            has_image: true,
+            has_link: true,
+            link_paths: vec![("assets/MCPT.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/raytracer/tree/master".to_string(), "Github".to_string(), ContentType::Github)],
+            image_index: 7,
+            tools: vec![
+                "C++".to_string(),
+                "Rendering".to_string(),
+                "Math".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Procedural waves and geometry".to_string(),
+            description: "Using C++ and OpenGL, a flat surface was rendered as waves on the GPU. Single vertices were also rendered as boxes by utilizing geometry shaders.".to_string(),
+            has_image: true,
+            has_link: true,
+            link_paths: vec![("assets/pw.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/Procedural-waves".to_string(), "Github".to_string(), ContentType::Github), ("https://www.youtube.com/watch?v=N_k3nFntPOg&t=2s".to_string(), "Video".to_string(), ContentType::Video)],
+            image_index: 8,
+            tools: vec![
+                "C++".to_string(),
+                "OpenGL".to_string(),
+                "GLSL".to_string(),
+                "Rendering".to_string(),
+                "Math".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        let mut infos: Vec<(String, String)> = vec![
+            ("Age".to_string(), "25".to_string()),
+            ("Age".to_string(), "25".to_string()),
+        ];
+        let mut info = Info {
+            infos,
+            has_image: true,
+            link_paths: vec![],
+            image_indices: vec![5],
+            uuid: Uuid::new_v4(),
+        };
+        let mut about_me = AboutMe {
+            description: vec!["Hi, I'm Rasmus!".to_string(), "I'm a software engineer from Sweden. My favourite programming language is rust, the language of the crabs!".to_string()
+             ,"I play the guitar, solve Rubik's cube and love working out. I am also member Nr. 3150 of NAFS(K), the Swedish Donaldism association.".to_string()],
+            uuid: Uuid::new_v4(),
+        };
 
         Self {
             name: "Rasmus Hogslätt".to_owned(),
             title: "Software developer".to_owned(),
-            about_me: "Write a brief introduction about yourself here.".to_owned(),
+            about_me,
             skills: vec![
                 "Skill 1".to_owned(),
                 "Skill 2".to_owned(),
@@ -135,6 +195,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             experiences,
             educations,
             projects,
+            info,
             contact_email: "r.hogslatt@gmail.com".to_owned(),
             images: LoadedImages::default(),
         }
@@ -196,7 +257,9 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
             ui.with_layout(
                 egui::Layout::top_down_justified(egui::Align::Center),
                 |ui| {
-                    ui.heading(&self.name);
+                    //ui.heading(&self.name);
+                    ui.add(AboutMeWidget::new(&self.about_me, &self.images));
+                    ui.add(InfoWidget::new(&self.info, &self.images));
                 },
             );
         });
@@ -207,7 +270,7 @@ pub fn open_pdf(file_path: String) {
     #[cfg(target_arch = "wasm32")]
     {
         if let Some(window) = web_sys::window() {
-            let _ = window.open_with_url_and_target(format!("/{}", &file_path), "_blank");
+            let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_blank");
         }
     }
 

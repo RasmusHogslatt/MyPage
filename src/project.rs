@@ -1,8 +1,10 @@
-use egui::{Color32, Image, RichText, Vec2, Widget};
+use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
 
+use crate::constants::*;
 use crate::{
-    app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH,
-    SIDE_PANEL_WIDTH, SIZE_IMAGE_HEIGHT, SIZE_IMAGE_WIDTH,
+    app::{open_pdf, LoadedImages},
+    ContentType, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIDE_PANEL_WIDTH,
+    SIZE_IMAGE_HEIGHT, SIZE_IMAGE_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -11,7 +13,7 @@ pub struct Project {
     pub description: String,
     pub has_image: bool,
     pub has_link: bool,
-    pub link_path: String,
+    pub link_paths: Vec<(String, String, ContentType)>, // Link, Alias, Type
     pub image_index: usize,
     pub tools: Vec<String>,
     #[serde(skip)]
@@ -56,6 +58,30 @@ impl<'a> Widget for ProjectWidget<'a> {
                 .show(ui, |ui| {
                     ui.label(RichText::new(&self.project.title).strong().underline());
                     ui.label(self.project.description.clone());
+                    for link in self.project.link_paths.clone() {
+                        match link.2 {
+                            ContentType::Pdf => {
+                                if ui.add(Hyperlink::new(link.1)).clicked() {
+                                    open_pdf(link.0);
+                                }
+                            }
+                            ContentType::Video => {
+                                ui.hyperlink_to(link.1, link.0);
+                            }
+                            ContentType::Github => {
+                                ui.hyperlink_to(link.1, link.0);
+                            }
+                        }
+                    }
+                    // if self.project.has_link {
+                    //     if ui.add(Hyperlink::new("Report: Master Thesis")).clicked() {
+                    //         open_pdf(self.project.link_paths[0].0.clone());
+                    //     }
+                    //     ui.hyperlink_to(
+                    //         "Video:   Driving RC car in Mixed Reality",
+                    //         self.project.link_paths[1].clone(),
+                    //     );
+                    // }
                     let mut tool_string: String = "".to_string();
                     for tool in self.project.tools.clone() {
                         // ui.label(RichText::new(tool).strong());
