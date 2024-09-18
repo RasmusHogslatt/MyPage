@@ -46,16 +46,18 @@ impl<'a> Default for LoadedImages<'a> {
         let crab = egui::include_image!("../assets/crab.png");
         let mcpt = egui::include_image!("../assets/mcpt.png");
         let pw = egui::include_image!("../assets/pw.png");
+        let thesis = egui::include_image!("../assets/thesis.png");
         let mut images = Vec::new();
-        images.push(saab);
-        images.push(liu);
-        images.push(voysys);
-        images.push(easylaser);
-        images.push(me);
-        images.push(donaldduck);
-        images.push(crab);
-        images.push(mcpt);
-        images.push(pw);
+        images.push(saab); // 0
+        images.push(liu); // 1
+        images.push(voysys); // 2
+        images.push(easylaser); // 3
+        images.push(me); // 4
+        images.push(donaldduck); // 5
+        images.push(crab); // 6
+        images.push(mcpt); // 7
+        images.push(pw); // 8
+        images.push(thesis); // 9
         LoadedImages { images }
     }
 }
@@ -127,7 +129,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             has_image: true,
             has_link: true,
             link_paths: vec![("assets/MasterThesis.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://www.youtube.com/watch?v=vJKHNgr7sD4".to_string(), "Video".to_string(), ContentType::Video)],
-            image_index: 2,
+            image_index: 9,
             tools: vec![
                 "Rust".to_string(),
                 "C++".to_string(),
@@ -178,8 +180,8 @@ impl<'a> Default for PersonalPortfolio<'a> {
             uuid: Uuid::new_v4(),
         };
         let mut about_me = AboutMe {
-            description: vec!["Hi, I'm Rasmus!".to_string(), "I'm a software engineer from Sweden. My favourite programming language is rust, the language of the crabs!".to_string()
-             ,"I play the guitar, solve Rubik's cube and love working out. I am also member Nr. 3150 of NAFS(K), the Swedish Donaldism association.".to_string()],
+            description: vec![("Hi, I'm Rasmus!".to_string(), None), ("I'm a software engineer from Sweden. My favourite programming language is rust, the language of the crabs!".to_string(), Some(6))
+             ,("I play the guitar, solve Rubik's cube and love working out. I am also member Nr. 3150 of NAFS(K), the Swedish Donaldism association.".to_string(), Some(5))],
             uuid: Uuid::new_v4(),
         };
 
