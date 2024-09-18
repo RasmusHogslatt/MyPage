@@ -1,3 +1,4 @@
+#[cfg(not(target_arch = "wasm32"))]
 use std::process::Command;
 
 use egui::{global_dark_light_mode_switch, ImageSource};
