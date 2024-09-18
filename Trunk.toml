@@ -1,4 +1,6 @@
 [build]
+command = "cp"
+command_arguments = ["-r", "assets", "dist/"]
 
 [file]
 files = ["assets/*"]
