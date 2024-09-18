@@ -40,12 +40,11 @@ impl<'a> Widget for ExperienceWidget<'a> {
         ui.group(|ui| {
             ui.set_width(GROUP_WIDTH);
             if let Some(image_source) = self.loaded_images.images.get(self.experience.image_index) {
-                let mut bg_fill: u8 = 0;
-                if ui.visuals().dark_mode {
-                    bg_fill = BG_COLOR_SCALING_DARK;
+                let bg_fill = if ui.visuals().dark_mode {
+                    BG_COLOR_SCALING_DARK
                 } else {
-                    bg_fill = BG_COLOR_SCALING_LIGHT;
-                }
+                    BG_COLOR_SCALING_LIGHT
+                };
                 let image = Image::new(image_source.clone())
                     .shrink_to_fit()
                     .bg_fill(Color32::from_additive_luminance(bg_fill));

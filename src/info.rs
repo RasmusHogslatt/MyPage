@@ -1,9 +1,7 @@
-use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
+use egui::{Color32, Image, RichText, Vec2, Widget};
 
 use crate::{
-    app::{open_pdf, LoadedImages},
-    BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, ICON_SIZE, SIDE_PANEL_WIDTH,
-    SIZE_IMAGE_HEIGHT, SIZE_IMAGE_WIDTH,
+    app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, ICON_SIZE,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -34,12 +32,11 @@ impl<'a> InfoWidget<'a> {
 impl<'a> Widget for InfoWidget<'a> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         ui.vertical_centered_justified(|ui| {
-            let mut bg_fill: u8 = 0;
-            if ui.visuals().dark_mode {
-                bg_fill = BG_COLOR_SCALING_DARK;
+            let bg_fill = if ui.visuals().dark_mode {
+                BG_COLOR_SCALING_DARK
             } else {
-                bg_fill = BG_COLOR_SCALING_LIGHT;
-            }
+                BG_COLOR_SCALING_LIGHT
+            };
             ui.group(|ui| {
                 ui.set_width(GROUP_WIDTH);
 

@@ -1,6 +1,5 @@
-use std::{fmt::format, process::Command};
+use std::process::Command;
 
-use egui::special_emojis::*;
 use egui::{global_dark_light_mode_switch, ImageSource};
 use egui_extras::install_image_loaders;
 use uuid::Uuid;
@@ -168,18 +167,18 @@ impl<'a> Default for PersonalPortfolio<'a> {
             ],
             uuid: Uuid::new_v4(),
         });
-        let mut infos: Vec<(String, String)> = vec![
+        let infos: Vec<(String, String)> = vec![
             ("Age".to_string(), "25".to_string()),
             ("Age".to_string(), "25".to_string()),
         ];
-        let mut info = Info {
+        let info = Info {
             infos,
             has_image: true,
             link_paths: vec![],
             image_indices: vec![5],
             uuid: Uuid::new_v4(),
         };
-        let mut about_me = AboutMe {
+        let about_me = AboutMe {
             description: vec![("Hi, I'm Rasmus!".to_string(), None), ("I'm a software engineer from Sweden. My favourite programming language is rust, the language of the crabs!".to_string(), Some(6))
              ,("I play the guitar, solve Rubik's cube and love working out. I am also member Nr. 3150 of NAFS(K), the Swedish Donaldism association.".to_string(), Some(5))],
             uuid: Uuid::new_v4(),
