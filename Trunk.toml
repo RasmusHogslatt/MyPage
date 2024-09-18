@@ -1,1 +1,4 @@
 [build]
+
+[file]
+files = ["assets/*"]
