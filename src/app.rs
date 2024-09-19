@@ -268,10 +268,11 @@ pub fn open_pdf(file_path: String) {
     #[cfg(target_arch = "wasm32")]
     {
         if let Some(window) = web_sys::window() {
-            let _ = window.open_with_url_and_target(
-                format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
-                "_self",
-            );
+            // let _ = window.open_with_url_and_target(
+            //     format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
+            //     "_self",
+            // );
+            let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_self");
         }
     }
 
