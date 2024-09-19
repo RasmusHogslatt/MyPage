@@ -19,7 +19,6 @@ pub struct Project {
     pub uuid: uuid::Uuid,
 }
 
-// New struct to wrap Experience and LoadedImages
 pub struct ProjectWidget<'a> {
     project: &'a Project,
     loaded_images: &'a LoadedImages<'a>,

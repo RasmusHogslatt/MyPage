@@ -14,13 +14,10 @@ pub struct Experience {
     pub end: String,
     pub description: String,
     pub image_index: usize,
-    pub has_link: bool,
-    pub link_path: String,
+    pub link_path: Option<(String, String)>, // URL, Name
     #[serde(skip)]
     pub uuid: uuid::Uuid,
 }
-
-// New struct to wrap Experience and LoadedImages
 pub struct ExperienceWidget<'a> {
     experience: &'a Experience,
     loaded_images: &'a LoadedImages<'a>,
@@ -64,15 +61,10 @@ impl<'a> Widget for ExperienceWidget<'a> {
                 .show(ui, |ui| {
                     ui.label(self.experience.description.clone());
                 });
-            if self.experience.has_link {
-                if ui
-                    .add(Hyperlink::from_label_and_url(
-                        "Report",
-                        self.experience.link_path.clone(),
-                    ))
-                    .clicked()
-                {
-                    open_pdf(self.experience.link_path.clone());
+            if let Some((url, label)) = &self.experience.link_path {
+                let hyperlink = Hyperlink::from_label_and_url(label, url);
+                if ui.add(hyperlink).clicked() {
+                    open_pdf(url.clone());
                 }
             }
         })

@@ -15,13 +15,11 @@ pub struct Education {
     pub description: String,
     pub grade_score: String,
     pub image_index: usize,
-    pub academic_record_path: String,
-    pub has_link: bool,
+    pub academic_record_path: Option<String>,
     #[serde(skip)]
     pub uuid: uuid::Uuid,
 }
 
-// New struct to wrap Experience and LoadedImages
 pub struct EducationWidget<'a> {
     education: &'a Education,
     loaded_images: &'a LoadedImages<'a>,
@@ -66,15 +64,12 @@ impl<'a> Widget for EducationWidget<'a> {
                 .show(ui, |ui| {
                     ui.label(self.education.description.clone());
                 });
-            if self.education.has_link {
+            if let Some(url) = &self.education.academic_record_path {
                 if ui
-                    .add(Hyperlink::from_label_and_url(
-                        "Academic Record",
-                        self.education.academic_record_path.clone(),
-                    ))
+                    .add(Hyperlink::from_label_and_url("Academic Record", url))
                     .clicked()
                 {
-                    open_pdf(self.education.academic_record_path.clone());
+                    open_pdf(url.to_string());
                 }
             }
         })

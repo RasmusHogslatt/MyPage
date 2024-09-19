@@ -1,3 +1,5 @@
+#[cfg(target_arch = "wasm32")]
+use crate::constants::PROJECT_NAME;
 #[cfg(not(target_arch = "wasm32"))]
 use std::process::Command;
 
@@ -7,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     AboutMe, AboutMeWidget, ContentType, Education, EducationWidget, Experience, ExperienceWidget,
-    Info, InfoWidget, Project, ProjectWidget, PROJECT_NAME, SIDE_PANEL_WIDTH,
+    Info, InfoWidget, Project, ProjectWidget, SIDE_PANEL_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -72,8 +74,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 0,
-            has_link: false,
-            link_path: "".to_string(),
+            link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
@@ -83,8 +84,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 2,
-            has_link: false,
-            link_path: "".to_string(),
+            link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
@@ -94,8 +94,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "asdfasd".to_string(),
             image_index: 3,
-            has_link: false,
-            link_path: "".to_string(),
+            link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
@@ -105,8 +104,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             end: "Current".to_string(),
             description: "Worked through summer and part time during coming semesters on the open source project Inviwo. It is an open source scientific visualization software developed mainly in C++ and OpenGL".to_string(),
             image_index: 1,
-            has_link: false,
-            link_path: "".to_string(),
+            link_path: None,
             uuid: Uuid::new_v4(),
         });
         let mut educations = Vec::new();
@@ -118,8 +116,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             description: "A degree similar to computer science, with stronger emphasis on the math and coding of computer graphics.".to_string(),
             grade_score: "4.0/5.0".to_string(),
             image_index: 1,
-            academic_record_path: "assets/Intyg.pdf".to_string(),
-            has_link: true,
+            academic_record_path: Some("assets/Intyg.pdf".to_string()),
             uuid: Uuid::new_v4(),
         });
         let mut projects = Vec::new();
@@ -174,9 +171,8 @@ impl<'a> Default for PersonalPortfolio<'a> {
         ];
         let info = Info {
             infos,
-            has_image: true,
             link_paths: vec![],
-            image_indices: vec![5],
+            image_indices: Some(vec![5]),
             uuid: Uuid::new_v4(),
         };
         let about_me = AboutMe {
@@ -274,7 +270,7 @@ pub fn open_pdf(file_path: String) {
         if let Some(window) = web_sys::window() {
             let _ = window.open_with_url_and_target(
                 format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
-                "_blank",
+                "_self",
             );
         }
     }

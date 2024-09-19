@@ -7,14 +7,12 @@ use crate::{
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 pub struct Info {
     pub infos: Vec<(String, String)>,
-    pub has_image: bool,
     pub link_paths: Vec<String>,
-    pub image_indices: Vec<usize>,
+    pub image_indices: Option<Vec<usize>>,
     #[serde(skip)]
     pub uuid: uuid::Uuid,
 }
 
-// New struct to wrap Experience and LoadedImages
 pub struct InfoWidget<'a> {
     info: &'a Info,
     loaded_images: &'a LoadedImages<'a>,
@@ -46,18 +44,20 @@ impl<'a> Widget for InfoWidget<'a> {
                     .show(ui, |ui| {
                         ui.heading(RichText::new("Information").underline().strong());
                         ui.columns(3, |ui| {
-                            for info in self.info.infos.clone() {
-                                ui[0].label(info.0);
-                                ui[1].label(info.1);
-                                if let Some(image_source) =
-                                    self.loaded_images.images.get(self.info.image_indices[0])
-                                {
-                                    let image = Image::new(image_source.clone())
-                                        .shrink_to_fit()
-                                        .bg_fill(Color32::from_additive_luminance(bg_fill));
-                                    ui[2].add_sized(Vec2::new(ICON_SIZE, ICON_SIZE), image);
-                                } else {
-                                    // No image
+                            for (index, info) in self.info.infos.iter().enumerate() {
+                                ui[0].label(&info.0);
+                                ui[1].label(&info.1);
+                                if let Some(image_indices) = &self.info.image_indices {
+                                    if let Some(&image_index) = image_indices.get(index) {
+                                        if let Some(image_source) =
+                                            self.loaded_images.images.get(image_index)
+                                        {
+                                            let image = Image::new(image_source.clone())
+                                                .shrink_to_fit()
+                                                .bg_fill(Color32::from_additive_luminance(bg_fill));
+                                            ui[2].add_sized(Vec2::new(ICON_SIZE, ICON_SIZE), image);
+                                        }
+                                    }
                                 }
                             }
                         });
