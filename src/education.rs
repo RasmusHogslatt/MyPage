@@ -67,7 +67,13 @@ impl<'a> Widget for EducationWidget<'a> {
                     ui.label(self.education.description.clone());
                 });
             if self.education.has_link {
-                if ui.add(Hyperlink::new("Academic Record")).clicked() {
+                if ui
+                    .add(Hyperlink::from_label_and_url(
+                        "Academic Record",
+                        self.education.academic_record_path.clone(),
+                    ))
+                    .clicked()
+                {
                     open_pdf(self.education.academic_record_path.clone());
                 }
             }

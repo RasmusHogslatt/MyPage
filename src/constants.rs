@@ -5,6 +5,7 @@ pub const SIZE_IMAGE_HEIGHT: f32 = 80.0;
 pub const BG_COLOR_SCALING_DARK: u8 = 200;
 pub const BG_COLOR_SCALING_LIGHT: u8 = 0;
 pub const ICON_SIZE: f32 = 15.0;
+pub const PROJECT_NAME: &str = "MyPage";
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
 pub enum ContentType {

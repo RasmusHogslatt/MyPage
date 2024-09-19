@@ -67,7 +67,7 @@ impl<'a> Widget for ExperienceWidget<'a> {
             if self.experience.has_link {
                 if ui
                     .add(Hyperlink::from_label_and_url(
-                        "Academic Record",
+                        "Report",
                         self.experience.link_path.clone(),
                     ))
                     .clicked()

@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::{
     AboutMe, AboutMeWidget, ContentType, Education, EducationWidget, Experience, ExperienceWidget,
-    Info, InfoWidget, Project, ProjectWidget, SIDE_PANEL_WIDTH,
+    Info, InfoWidget, Project, ProjectWidget, PROJECT_NAME, SIDE_PANEL_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -272,7 +272,10 @@ pub fn open_pdf(file_path: String) {
     #[cfg(target_arch = "wasm32")]
     {
         if let Some(window) = web_sys::window() {
-            let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_blank");
+            let _ = window.open_with_url_and_target(
+                format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
+                "_blank",
+            );
         }
     }
 

@@ -59,7 +59,10 @@ impl<'a> Widget for ProjectWidget<'a> {
                     for link in self.project.link_paths.clone() {
                         match link.2 {
                             ContentType::Pdf => {
-                                if ui.add(Hyperlink::new(link.1)).clicked() {
+                                if ui
+                                    .add(Hyperlink::from_label_and_url("Report", link.1))
+                                    .clicked()
+                                {
                                     open_pdf(link.0);
                                 }
                             }
@@ -71,18 +74,8 @@ impl<'a> Widget for ProjectWidget<'a> {
                             }
                         }
                     }
-                    // if self.project.has_link {
-                    //     if ui.add(Hyperlink::new("Report: Master Thesis")).clicked() {
-                    //         open_pdf(self.project.link_paths[0].0.clone());
-                    //     }
-                    //     ui.hyperlink_to(
-                    //         "Video:   Driving RC car in Mixed Reality",
-                    //         self.project.link_paths[1].clone(),
-                    //     );
-                    // }
                     let mut tool_string: String = "".to_string();
                     for tool in self.project.tools.clone() {
-                        // ui.label(RichText::new(tool).strong());
                         tool_string.push_str(tool.as_str());
                         tool_string.push_str("  ");
                     }
