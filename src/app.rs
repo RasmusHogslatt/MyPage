@@ -240,7 +240,7 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                         }
                     });
             });
-
+        //
         egui::SidePanel::right("right_panel")
             .exact_width(SIDE_PANEL_WIDTH)
             .resizable(false)
