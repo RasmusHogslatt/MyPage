@@ -12,7 +12,7 @@ pub struct Project {
     pub description: String,
     pub has_image: bool,
     pub has_link: bool,
-    pub link_paths: Vec<(String, String, ContentType)>, // Link, Alias, Type
+    pub link_paths: Vec<(String, String, ContentType)>, // Url, Name, Type
     pub image_index: usize,
     pub tools: Vec<String>,
     #[serde(skip)]
@@ -55,21 +55,18 @@ impl<'a> Widget for ProjectWidget<'a> {
                 .show(ui, |ui| {
                     ui.label(RichText::new(&self.project.title).strong().underline());
                     ui.label(self.project.description.clone());
-                    for link in self.project.link_paths.clone() {
-                        match link.2 {
+                    for (url, name, content_type) in &self.project.link_paths {
+                        match content_type {
                             ContentType::Pdf => {
-                                if ui
-                                    .add(Hyperlink::from_label_and_url("Report", link.1))
-                                    .clicked()
-                                {
-                                    open_pdf(link.0);
+                                if ui.add(Hyperlink::from_label_and_url(name, url)).clicked() {
+                                    open_pdf(url.to_string());
                                 }
                             }
                             ContentType::Video => {
-                                ui.hyperlink_to(link.1, link.0);
+                                ui.hyperlink_to(name, url);
                             }
                             ContentType::Github => {
-                                ui.hyperlink_to(link.1, link.0);
+                                ui.hyperlink_to(name, url);
                             }
                         }
                     }
