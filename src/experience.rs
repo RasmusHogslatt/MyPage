@@ -65,7 +65,13 @@ impl<'a> Widget for ExperienceWidget<'a> {
                     ui.label(self.experience.description.clone());
                 });
             if self.experience.has_link {
-                if ui.add(Hyperlink::new("Academic Record")).clicked() {
+                if ui
+                    .add(Hyperlink::from_label_and_url(
+                        "Academic Record",
+                        self.experience.link_path.clone(),
+                    ))
+                    .clicked()
+                {
                     open_pdf(self.experience.link_path.clone());
                 }
             }
