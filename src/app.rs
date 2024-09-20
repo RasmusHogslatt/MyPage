@@ -275,7 +275,7 @@ pub fn open_pdf(file_path: String) {
             let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_self");
         }
     }
-
+    //
     #[cfg(not(target_arch = "wasm32"))]
     {
         let path = std::path::Path::new(&file_path);
