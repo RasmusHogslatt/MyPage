@@ -272,7 +272,7 @@ pub fn open_pdf(file_path: String) {
             //     format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
             //     "_self",
             // );
-            let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_self");
+            let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_blank");
         }
     }
     //
