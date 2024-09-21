@@ -90,22 +90,22 @@ impl<'a> Default for PersonalPortfolio<'a> {
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
-            company: "Easy Laser".to_string(),
-            position: "Software Developer/Electronics Assembly".to_string(),
-            start: "2018".to_string(),
-            end: "2022".to_string(),
-            description: "Worked full time before university, assembling laser based measuring devices. Here I saw how all steps of the supply chain worked, given that everything everything was done in house.\nThroughout studies, I worked part time during summer as software developer".to_string(),
-            image_index: 3,
-            link_path: None,
-            uuid: Uuid::new_v4(),
-        });
-        experiences.push(Experience {
             company: "Linköping University".to_string(),
             position: "Research Assistant".to_string(),
             start: "2022".to_string(),
             end: "2023".to_string(),
             description: "Worked through summer and part time during coming semesters on the open source project Inviwo. It is an open source scientific visualization software developed mainly in C++ and OpenGL".to_string(),
             image_index: 1,
+            link_path: None,
+            uuid: Uuid::new_v4(),
+        });
+        experiences.push(Experience {
+            company: "Easy Laser".to_string(),
+            position: "Software Developer/Electronics Assembly".to_string(),
+            start: "2018".to_string(),
+            end: "2022".to_string(),
+            description: "Worked full time before university, assembling laser based measuring devices. Here I saw how all steps of the supply chain worked, given that everything everything was done in house.\nThroughout studies, I worked part time during summer as software developer".to_string(),
+            image_index: 3,
             link_path: None,
             uuid: Uuid::new_v4(),
         });
