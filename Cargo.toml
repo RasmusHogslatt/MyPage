@@ -26,6 +26,7 @@ log = "0.4"
 serde = { version = "1", features = ["derive"] }
 web-sys = { version = "0.3", features = ["Window"] }
 getrandom = { version = "0.2", features = ["js"] }
+chrono = { version = "0.4.38", features = ["wasmbind"] }
 
 [dependencies.uuid]
 version = "1.10.0"

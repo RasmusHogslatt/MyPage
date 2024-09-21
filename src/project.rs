@@ -65,7 +65,8 @@ impl<'a> Widget for ProjectWidget<'a> {
                             ContentType::Video => {
                                 ui.hyperlink_to(name, url);
                             }
-                            ContentType::Github => {
+
+                            ContentType::Link => {
                                 ui.hyperlink_to(name, url);
                             }
                         }

@@ -15,9 +15,6 @@ use crate::{
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct PersonalPortfolio<'a> {
-    name: String,
-    title: String,
-    skills: Vec<String>,
     #[serde(skip)]
     info: Info,
     #[serde(skip)]
@@ -28,7 +25,6 @@ pub struct PersonalPortfolio<'a> {
     educations: Vec<Education>,
     #[serde(skip)]
     projects: Vec<Project>,
-    contact_email: String,
     #[serde(skip)]
     images: LoadedImages<'a>,
 }
@@ -49,6 +45,9 @@ impl<'a> Default for LoadedImages<'a> {
         let mcpt = egui::include_image!("../assets/mcpt.png");
         let pw = egui::include_image!("../assets/pw.png");
         let thesis = egui::include_image!("../assets/thesis.png");
+        let linkedin = egui::include_image!("../assets/linkedin.png");
+        let licenses = egui::include_image!("../assets/licenses.png");
+        let sweden = egui::include_image!("../assets/sweden.png");
         let mut images = Vec::new();
         images.push(saab); // 0
         images.push(liu); // 1
@@ -60,6 +59,9 @@ impl<'a> Default for LoadedImages<'a> {
         images.push(mcpt); // 7
         images.push(pw); // 8
         images.push(thesis); // 9
+        images.push(linkedin); // 10
+        images.push(licenses); // 11
+        images.push(sweden); // 12
         LoadedImages { images }
     }
 }
@@ -140,7 +142,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             description: "A Monte Carlo pathtracer that renders realisitc reflections, refractions and direct and indirect illumination of diffuse objects.".to_string(),
             has_image: true,
             has_link: true,
-            link_paths: vec![("assets/MCPT.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/raytracer/tree/master".to_string(), "Github".to_string(), ContentType::Github)],
+            link_paths: vec![("assets/MCPT.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/raytracer/tree/master".to_string(), "Github".to_string(), ContentType::Link)],
             image_index: 7,
             tools: vec![
                 "C++".to_string(),
@@ -154,7 +156,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             description: "Using C++ and OpenGL, a flat surface was rendered as waves on the GPU. Single vertices were also rendered as boxes by utilizing geometry shaders.".to_string(),
             has_image: true,
             has_link: true,
-            link_paths: vec![("assets/pw.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/Procedural-waves".to_string(), "Github".to_string(), ContentType::Github), ("https://www.youtube.com/watch?v=N_k3nFntPOg&t=2s".to_string(), "Video".to_string(), ContentType::Video)],
+            link_paths: vec![("assets/pw.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/Procedural-waves".to_string(), "Github".to_string(), ContentType::Link), ("https://www.youtube.com/watch?v=N_k3nFntPOg&t=2s".to_string(), "Video".to_string(), ContentType::Video)],
             image_index: 8,
             tools: vec![
                 "C++".to_string(),
@@ -165,15 +167,25 @@ impl<'a> Default for PersonalPortfolio<'a> {
             ],
             uuid: Uuid::new_v4(),
         });
-        let infos: Vec<(String, String)> = vec![
-            ("Age".to_string(), "25".to_string()),
-            ("Age".to_string(), "25".to_string()),
+        let infos: Vec<(String, String, Option<usize>)> = vec![
+            (
+                "Driver's licenses:".to_string(),
+                "Car, Motorcycle".to_string(),
+                Some(11),
+            ),
+            ("Nationality:".to_string(), "Swedish".to_string(), Some(12)),
         ];
+
         let info = Info {
             infos,
-            link_paths: vec![],
-            image_indices: Some(vec![5]),
+            link_paths: vec![(
+                "https://www.linkedin.com/in/rasmushogslatt/".to_string(),
+                "LinkedIn".to_string(),
+                ContentType::Link,
+                Some(10),
+            )],
             uuid: Uuid::new_v4(),
+            birth_year: 1999,
         };
         let about_me = AboutMe {
             description: vec![("Hi, I'm Rasmus!".to_string(), None), ("I'm a software engineer from Sweden. My favourite programming language is rust, the language of the crabs!".to_string(), Some(6))
@@ -182,19 +194,11 @@ impl<'a> Default for PersonalPortfolio<'a> {
         };
 
         Self {
-            name: "Rasmus Hogslätt".to_owned(),
-            title: "Software developer".to_owned(),
             about_me,
-            skills: vec![
-                "Skill 1".to_owned(),
-                "Skill 2".to_owned(),
-                "Skill 3".to_owned(),
-            ],
             experiences,
             educations,
             projects,
             info,
-            contact_email: "r.hogslatt@gmail.com".to_owned(),
             images: LoadedImages::default(),
         }
     }
@@ -240,7 +244,7 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                         }
                     });
             });
-        //
+
         egui::SidePanel::right("right_panel")
             .exact_width(SIDE_PANEL_WIDTH)
             .resizable(false)
@@ -255,7 +259,6 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
             ui.with_layout(
                 egui::Layout::top_down_justified(egui::Align::Center),
                 |ui| {
-                    //ui.heading(&self.name);
                     ui.add(AboutMeWidget::new(&self.about_me, &self.images));
                     ui.add(InfoWidget::new(&self.info, &self.images));
                 },
@@ -268,14 +271,9 @@ pub fn open_pdf(file_path: String) {
     #[cfg(target_arch = "wasm32")]
     {
         if let Some(window) = web_sys::window() {
-            // let _ = window.open_with_url_and_target(
-            //     format!("{}/{}", PROJECT_NAME, &file_path).as_str(),
-            //     "_self",
-            // );
             let _ = window.open_with_url_and_target(format!("/{}", &file_path).as_str(), "_blank");
         }
     }
-    //
     #[cfg(not(target_arch = "wasm32"))]
     {
         let path = std::path::Path::new(&file_path);

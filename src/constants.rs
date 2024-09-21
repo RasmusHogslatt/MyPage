@@ -11,5 +11,5 @@ pub const PROJECT_NAME: &str = "MyPage";
 pub enum ContentType {
     Pdf,
     Video,
-    Github,
+    Link,
 }
