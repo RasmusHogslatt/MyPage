@@ -72,36 +72,38 @@ impl<'a> Default for PersonalPortfolio<'a> {
             position: "Software Engineer".to_string(),
             start: "June 2024".to_string(),
             end: "Current".to_string(),
-            description: "asdfasd".to_string(),
+            description:
+                "Maintaining and developing software used in some of Saab's underwater products."
+                    .to_string(),
             image_index: 0,
             link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
             company: "Voysys".to_string(),
-            position: "Software Engineer".to_string(),
-            start: "June 2024".to_string(),
-            end: "Current".to_string(),
-            description: "asdfasd".to_string(),
+            position: "Thesis Project".to_string(),
+            start: "January 2024".to_string(),
+            end: "May 2024".to_string(),
+            description: "Developed a mixed reality system for controlling and visualizing the path of a remote controlled car in mixed reality on a Meta Quest 3. Implementation was done in Rust, involving contributions to the open source project \"Bevy Engine\".".to_string(),
             image_index: 2,
             link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
             company: "Easy Laser".to_string(),
-            position: "Software Engineer".to_string(),
-            start: "June 2024".to_string(),
-            end: "Current".to_string(),
-            description: "asdfasd".to_string(),
+            position: "Software Developer/Electronics Assembly".to_string(),
+            start: "2018".to_string(),
+            end: "2022".to_string(),
+            description: "Worked full time before university, assembling laser based measuring devices. Here I saw how all steps of the supply chain worked, given that everything everything was done in house.\nThroughout studies, I worked part time during summer as software developer".to_string(),
             image_index: 3,
             link_path: None,
             uuid: Uuid::new_v4(),
         });
         experiences.push(Experience {
             company: "Linköping University".to_string(),
-            position: "Research assistant".to_string(),
-            start: "June 2024".to_string(),
-            end: "Current".to_string(),
+            position: "Research Assistant".to_string(),
+            start: "2022".to_string(),
+            end: "2023".to_string(),
             description: "Worked through summer and part time during coming semesters on the open source project Inviwo. It is an open source scientific visualization software developed mainly in C++ and OpenGL".to_string(),
             image_index: 1,
             link_path: None,
@@ -254,13 +256,18 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.with_layout(
-                egui::Layout::top_down_justified(egui::Align::Center),
-                |ui| {
-                    ui.add(AboutMeWidget::new(&self.about_me, &self.images));
-                    ui.add(InfoWidget::new(&self.info, &self.images));
-                },
-            );
+            egui::ScrollArea::vertical()
+                .id_source("center_scroll_area")
+                .auto_shrink(false)
+                .show(ui, |ui| {
+                    ui.with_layout(
+                        egui::Layout::top_down_justified(egui::Align::Center),
+                        |ui| {
+                            ui.add(AboutMeWidget::new(&self.about_me, &self.images));
+                            ui.add(InfoWidget::new(&self.info, &self.images));
+                        },
+                    );
+                });
         });
     }
 }

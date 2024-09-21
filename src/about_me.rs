@@ -38,49 +38,37 @@ impl<'a> Widget for AboutMeWidget<'a> {
             ui.group(|ui| {
                 ui.set_width(CENTER_GROUP_WIDTH);
 
-                egui::ScrollArea::vertical()
-                    .id_source(format!("{}", self.about_me.uuid))
-                    .auto_shrink(true)
+                if let Some(image_source) = self.loaded_images.images.get(4) {
+                    let image = Image::new(image_source.clone())
+                        .shrink_to_fit()
+                        .bg_fill(Color32::from_additive_luminance(bg_fill));
+                    ui.add(image);
+                    ui.heading(RichText::new(self.about_me.description[0].0.clone()).strong());
+                }
+                egui::Grid::new("about_me_grid")
+                    .max_col_width(CENTER_GROUP_WIDTH * 0.7)
+                    .num_columns(2)
                     .show(ui, |ui| {
-                        if let Some(image_source) = self.loaded_images.images.get(4) {
-                            let image = Image::new(image_source.clone())
-                                .shrink_to_fit()
-                                .bg_fill(Color32::from_additive_luminance(bg_fill));
-                            ui.add(image);
-                            ui.heading(
-                                RichText::new(self.about_me.description[0].0.clone()).strong(),
-                            );
-                        }
-                        egui::Grid::new("about_me_grid")
-                            .max_col_width(CENTER_GROUP_WIDTH * 0.7)
-                            .num_columns(2)
-                            .show(ui, |ui| {
-                                for (index, description) in
-                                    self.about_me.description.iter().enumerate()
+                        for (index, description) in self.about_me.description.iter().enumerate() {
+                            if index != 0 {
+                                ui.label(RichText::new(description.0.clone()));
+                            }
+                            if description.1.is_some() {
+                                if let Some(image_source) =
+                                    self.loaded_images.images.get(description.1.unwrap())
                                 {
-                                    if index != 0 {
-                                        ui.label(RichText::new(description.0.clone()));
-                                    }
-                                    if description.1.is_some() {
-                                        if let Some(image_source) =
-                                            self.loaded_images.images.get(description.1.unwrap())
-                                        {
-                                            let image = Image::new(image_source.clone())
-                                                .shrink_to_fit()
-                                                .bg_fill(Color32::from_additive_luminance(bg_fill));
-                                            ui.add_sized(
-                                                Vec2::new(
-                                                    SIZE_IMAGE_WIDTH / 2.0,
-                                                    SIZE_IMAGE_WIDTH / 2.0,
-                                                ),
-                                                image,
-                                            );
-                                        } else {
-                                        }
-                                    }
-                                    ui.end_row();
+                                    let image = Image::new(image_source.clone())
+                                        .shrink_to_fit()
+                                        .bg_fill(Color32::from_additive_luminance(bg_fill));
+                                    ui.add_sized(
+                                        Vec2::new(SIZE_IMAGE_WIDTH / 2.0, SIZE_IMAGE_WIDTH / 2.0),
+                                        image,
+                                    );
+                                } else {
                                 }
-                            });
+                            }
+                            ui.end_row();
+                        }
                     });
             });
         })
