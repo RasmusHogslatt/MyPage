@@ -1,5 +1,3 @@
-#[cfg(target_arch = "wasm32")]
-use crate::constants::PROJECT_NAME;
 #[cfg(not(target_arch = "wasm32"))]
 use std::process::Command;
 
@@ -39,7 +37,7 @@ impl<'a> Default for LoadedImages<'a> {
         let liu = egui::include_image!("../assets/liu.png");
         let voysys = egui::include_image!("../assets/voysys.png");
         let easylaser = egui::include_image!("../assets/easylaser.png");
-        let me = egui::include_image!("../assets/me_lego2.png");
+        let me = egui::include_image!("../assets/me.jpg");
         let donaldduck = egui::include_image!("../assets/donaldduck.png");
         let crab = egui::include_image!("../assets/crab.png");
         let mcpt = egui::include_image!("../assets/mcpt.png");

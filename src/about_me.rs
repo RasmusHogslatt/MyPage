@@ -1,7 +1,8 @@
 use egui::{Color32, Image, RichText, Vec2, Widget};
 
 use crate::{
-    app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_WIDTH,
+    app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, CENTER_GROUP_WIDTH,
+    SIZE_IMAGE_WIDTH,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -35,7 +36,7 @@ impl<'a> Widget for AboutMeWidget<'a> {
                 BG_COLOR_SCALING_LIGHT
             };
             ui.group(|ui| {
-                ui.set_width(GROUP_WIDTH);
+                ui.set_width(CENTER_GROUP_WIDTH);
 
                 egui::ScrollArea::vertical()
                     .id_source(format!("{}", self.about_me.uuid))
@@ -45,13 +46,13 @@ impl<'a> Widget for AboutMeWidget<'a> {
                             let image = Image::new(image_source.clone())
                                 .shrink_to_fit()
                                 .bg_fill(Color32::from_additive_luminance(bg_fill));
-                            ui.add_sized(Vec2::new(200.0, 300.0), image);
+                            ui.add(image);
                             ui.heading(
                                 RichText::new(self.about_me.description[0].0.clone()).strong(),
                             );
                         }
                         egui::Grid::new("about_me_grid")
-                            .max_col_width(GROUP_WIDTH * 0.7)
+                            .max_col_width(CENTER_GROUP_WIDTH * 0.7)
                             .num_columns(2)
                             .show(ui, |ui| {
                                 for (index, description) in

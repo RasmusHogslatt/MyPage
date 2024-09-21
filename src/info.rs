@@ -2,8 +2,8 @@ use chrono::{Datelike, Utc};
 use egui::{Color32, Image, RichText, Vec2, Widget};
 
 use crate::{
-    app::LoadedImages, ContentType, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH,
-    ICON_SIZE,
+    app::LoadedImages, ContentType, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT,
+    CENTER_GROUP_WIDTH, ICON_SIZE,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -39,7 +39,7 @@ impl<'a> Widget for InfoWidget<'a> {
                 BG_COLOR_SCALING_LIGHT
             };
             ui.group(|ui| {
-                ui.set_width(GROUP_WIDTH);
+                ui.set_width(CENTER_GROUP_WIDTH);
 
                 egui::ScrollArea::vertical()
                     .id_source(format!("{}", self.info.uuid))
