@@ -1,7 +1,7 @@
 #[cfg(not(target_arch = "wasm32"))]
 use std::process::Command;
 
-use egui::{global_dark_light_mode_switch, ImageSource};
+use egui::{global_dark_light_mode_switch, ImageSource, RichText};
 use egui_extras::install_image_loaders;
 use uuid::Uuid;
 
@@ -46,6 +46,10 @@ impl<'a> Default for LoadedImages<'a> {
         let linkedin = egui::include_image!("../assets/linkedin.png");
         let licenses = egui::include_image!("../assets/licenses.png");
         let sweden = egui::include_image!("../assets/sweden.png");
+        let flappybird = egui::include_image!("../assets/flappybird.png");
+        let legonization = egui::include_image!("../assets/legonization.png");
+        let dncnn = egui::include_image!("../assets/dncnn.png");
+        let gameoflife = egui::include_image!("../assets/gameoflife.png");
         let mut images = Vec::new();
         images.push(saab); // 0
         images.push(liu); // 1
@@ -60,6 +64,10 @@ impl<'a> Default for LoadedImages<'a> {
         images.push(linkedin); // 10
         images.push(licenses); // 11
         images.push(sweden); // 12
+        images.push(flappybird); // 13
+        images.push(legonization); // 14
+        images.push(dncnn); // 15
+        images.push(gameoflife); // 16
         LoadedImages { images }
     }
 }
@@ -125,10 +133,8 @@ impl<'a> Default for PersonalPortfolio<'a> {
         projects.push(Project {
             title: "Visualizing RC car in Mixed Reality".to_string(),
             description: "Visualization and control of an RC car in Mixed Reality. Implemented in Rust, involving contributions to the open source Bevy Engine. This was part of my master's thesis.".to_string(),
-            has_image: true,
-            has_link: true,
             link_paths: vec![("assets/MasterThesis.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://www.youtube.com/watch?v=vJKHNgr7sD4".to_string(), "Video".to_string(), ContentType::Video)],
-            image_index: 9,
+            image_index: Some(9),
             tools: vec![
                 "Rust".to_string(),
                 "C++".to_string(),
@@ -140,10 +146,8 @@ impl<'a> Default for PersonalPortfolio<'a> {
         projects.push(Project {
             title: "Monte Carlo Pathtracer".to_string(),
             description: "A Monte Carlo pathtracer that renders realisitc reflections, refractions and direct and indirect illumination of diffuse objects.".to_string(),
-            has_image: true,
-            has_link: true,
             link_paths: vec![("assets/MCPT.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/raytracer/tree/master".to_string(), "Github".to_string(), ContentType::Link)],
-            image_index: 7,
+            image_index: Some(7),
             tools: vec![
                 "C++".to_string(),
                 "Rendering".to_string(),
@@ -154,16 +158,80 @@ impl<'a> Default for PersonalPortfolio<'a> {
         projects.push(Project {
             title: "Procedural waves and geometry".to_string(),
             description: "Using C++ and OpenGL, a flat surface was rendered as waves on the GPU. Single vertices were also rendered as boxes by utilizing geometry shaders.".to_string(),
-            has_image: true,
-            has_link: true,
             link_paths: vec![("assets/pw.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://github.com/RasmusHogslatt/Procedural-waves".to_string(), "Github".to_string(), ContentType::Link), ("https://www.youtube.com/watch?v=N_k3nFntPOg&t=2s".to_string(), "Video".to_string(), ContentType::Video)],
-            image_index: 8,
+            image_index: Some(8),
             tools: vec![
                 "C++".to_string(),
                 "OpenGL".to_string(),
                 "GLSL".to_string(),
                 "Rendering".to_string(),
                 "Math".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Genetic Traing of Flappy Birds".to_string(),
+            description: "Implemented my own genetic training algorithm and neural networks from scratch in Rust and used these to train birds in my own Bevy based implementation of the Flappy Bird game.".to_string(),
+            link_paths: vec![("assets/Flappy_Bird.pdf".to_string(), "Report".to_string(), ContentType::Pdf), ("https://www.youtube.com/watch?v=uUAlo93hbfk".to_string(), "Video".to_string(), ContentType::Video)],
+            image_index: Some(13),
+            tools: vec![
+                "Rust".to_string(),
+                "AI".to_string(),
+                "ML".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Legonization of images".to_string(),
+            description: "A program that converts an uploaded image into a lego mosaic and calculates pieces required to reproduce with actual bricks. Support multiple brick types. Color matching was done using CIELAB.".to_string(),
+            link_paths: vec![("assets/Legonization.pdf".to_string(), "Report".to_string(), ContentType::Pdf)],
+            image_index: Some(14),
+            tools: vec![
+                "Color spaces".to_string(),
+                "Matlab".to_string(),
+                "Typescript".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Custom model for denoising images".to_string(),
+            description: "Implemented my own deep learning convolutional neural network, DnCNN, for denoising images.".to_string(),
+            link_paths: vec![("assets/DNCNN.pdf".to_string(), "Report".to_string(), ContentType::Pdf)],
+            image_index: Some(15),
+            tools: vec![
+                "Python".to_string(),
+                "ML".to_string(),
+                "Deep Learning".to_string(),
+                "Convolutional Neural Networks".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Multithreaded  MD5-based password cracker".to_string(),
+            description:
+                "Explored multithreading in Rust by implementing a MD5 based password cracker."
+                    .to_string(),
+            link_paths: vec![(
+                "https://github.com/RasmusHogslatt/Password-Cracker".to_string(),
+                "Github".to_string(),
+                ContentType::Link,
+            )],
+            image_index: None,
+            tools: vec!["Rust".to_string()],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Conway's Game of Life".to_string(),
+            description: "For my first project in Rust, I implemented Conway's Game of Life. The user clicks on the tiles that should be active and then starts the simulation. It is fascinating how simple rules can produce very complex patterns."
+                .to_string(),
+            link_paths: vec![(
+                "https://github.com/RasmusHogslatt/GameOfLife?tab=readme-ov-file".to_string(),
+                "Github".to_string(),
+                ContentType::Link,
+            )],
+            image_index: Some(16),
+            tools: vec![
+                "Rust".to_string(),
             ],
             uuid: Uuid::new_v4(),
         });
@@ -234,11 +302,11 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                     .id_source("left_scroll_area")
                     .auto_shrink(true)
                     .show(ui, |ui| {
-                        ui.heading("Education");
+                        ui.heading(RichText::new("Education").underline().strong());
                         for education in &self.educations {
                             ui.add(EducationWidget::new(education, &self.images));
                         }
-                        ui.heading("Experience");
+                        ui.heading(RichText::new("Experiences").underline().strong());
                         for experience in &self.experiences {
                             ui.add(ExperienceWidget::new(experience, &self.images));
                         }
@@ -249,10 +317,15 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
             .exact_width(SIDE_PANEL_WIDTH)
             .resizable(false)
             .show(ctx, |ui| {
-                ui.heading("Projects");
-                for project in &self.projects {
-                    ui.add(ProjectWidget::new(project, &self.images));
-                }
+                egui::ScrollArea::vertical()
+                    .id_source("right_scroll_area")
+                    .auto_shrink(false)
+                    .show(ui, |ui| {
+                        ui.heading(RichText::new("Projects").underline().strong());
+                        for project in &self.projects {
+                            ui.add(ProjectWidget::new(project, &self.images));
+                        }
+                    });
             });
 
         egui::CentralPanel::default().show(ctx, |ui| {

@@ -10,10 +10,8 @@ use crate::{
 pub struct Project {
     pub title: String,
     pub description: String,
-    pub has_image: bool,
-    pub has_link: bool,
     pub link_paths: Vec<(String, String, ContentType)>, // Url, Name, Type
-    pub image_index: usize,
+    pub image_index: Option<usize>,
     pub tools: Vec<String>,
     #[serde(skip)]
     pub uuid: uuid::Uuid,
@@ -37,47 +35,51 @@ impl<'a> Widget for ProjectWidget<'a> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         ui.group(|ui| {
             ui.set_width(GROUP_WIDTH);
-            if let Some(image_source) = self.loaded_images.images.get(self.project.image_index) {
-                let bg_fill = if ui.visuals().dark_mode {
-                    BG_COLOR_SCALING_DARK
-                } else {
-                    BG_COLOR_SCALING_LIGHT
-                };
-                let image = Image::new(image_source.clone())
-                    .shrink_to_fit()
-                    .bg_fill(Color32::from_additive_luminance(bg_fill));
-                ui.add_sized(Vec2::new(SIZE_IMAGE_WIDTH, SIZE_IMAGE_HEIGHT), image);
+            if let Some(image_index) = self.project.image_index {
+                if let Some(image_source) = self.loaded_images.images.get(image_index) {
+                    let bg_fill = if ui.visuals().dark_mode {
+                        BG_COLOR_SCALING_DARK
+                    } else {
+                        BG_COLOR_SCALING_LIGHT
+                    };
+                    let image = Image::new(image_source.clone())
+                        .shrink_to_fit()
+                        .bg_fill(Color32::from_additive_luminance(bg_fill));
+                    ui.add_sized(Vec2::new(SIZE_IMAGE_WIDTH, SIZE_IMAGE_HEIGHT), image);
+                }
             }
 
-            egui::ScrollArea::vertical()
-                .id_source(format!("{}", self.project.uuid))
-                .auto_shrink(true)
-                .show(ui, |ui| {
-                    ui.label(RichText::new(&self.project.title).strong().underline());
-                    ui.label(self.project.description.clone());
-                    for (url, name, content_type) in &self.project.link_paths {
-                        match content_type {
-                            ContentType::Pdf => {
-                                if ui.add(Hyperlink::from_label_and_url(name, url)).clicked() {
-                                    open_pdf(url.to_string());
-                                }
-                            }
-                            ContentType::Video => {
-                                ui.hyperlink_to(name, url);
-                            }
-
-                            ContentType::Link => {
-                                ui.hyperlink_to(name, url);
+            // egui::ScrollArea::vertical()
+            //     .id_source(format!("{}", self.project.uuid))
+            //     .auto_shrink(true)
+            //     .show(ui, |ui| {
+            ui.label(RichText::new(&self.project.title).strong().underline());
+            ui.label(self.project.description.clone());
+            ui.horizontal(|ui| {
+                for (url, name, content_type) in &self.project.link_paths {
+                    match content_type {
+                        ContentType::Pdf => {
+                            if ui.add(Hyperlink::from_label_and_url(name, url)).clicked() {
+                                open_pdf(url.to_string());
                             }
                         }
+                        ContentType::Video => {
+                            ui.hyperlink_to(name, url);
+                        }
+
+                        ContentType::Link => {
+                            ui.hyperlink_to(name, url);
+                        }
                     }
-                    let mut tool_string: String = "".to_string();
-                    for tool in self.project.tools.clone() {
-                        tool_string.push_str(tool.as_str());
-                        tool_string.push_str("  ");
-                    }
-                    ui.label(RichText::new(tool_string).strong());
-                });
+                }
+            });
+            let mut tool_string: String = "".to_string();
+            for tool in self.project.tools.clone() {
+                tool_string.push_str(tool.as_str());
+                tool_string.push_str("  ");
+            }
+            ui.label(RichText::new(tool_string).strong());
+            // });
         })
         .response
     }
