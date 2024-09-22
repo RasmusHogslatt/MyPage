@@ -117,6 +117,16 @@ impl<'a> Default for PersonalPortfolio<'a> {
             link_path: None,
             uuid: Uuid::new_v4(),
         });
+        experiences.push(Experience {
+            company: "Linköping University".to_string(),
+            position: "Math assistant".to_string(),
+            start: "2019".to_string(),
+            end: "2020".to_string(),
+            description: "I assisted in teaching fundamental math, and single- and multivariable calculus for first year university students. This entailed having my own classes where I held presentations and students were able to ask me questions.\nI also assisted in coding courses, such as object oriented programming and immersive visualization.".to_string(),
+            image_index: 1,
+            link_path: None,
+            uuid: Uuid::new_v4(),
+        });
         let mut educations = Vec::new();
         educations.push(Education {
             university: "Linköping University".to_string(),

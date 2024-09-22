@@ -55,12 +55,7 @@ impl<'a> Widget for ExperienceWidget<'a> {
                 ));
                 ui[0].label(&self.experience.position);
             });
-            egui::ScrollArea::vertical()
-                .id_source(format!("{}", self.experience.uuid))
-                .auto_shrink(true)
-                .show(ui, |ui| {
-                    ui.label(self.experience.description.clone());
-                });
+            ui.label(self.experience.description.clone());
             if let Some((url, label)) = &self.experience.link_path {
                 let hyperlink = Hyperlink::from_label_and_url(label, url);
                 if ui.add(hyperlink).clicked() {
