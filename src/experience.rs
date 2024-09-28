@@ -1,9 +1,9 @@
-use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
+use egui::{Align, Color32, Hyperlink, Image, RichText, Vec2, Widget};
 
 use crate::{
     app::{open_pdf, LoadedImages},
     BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_HEIGHT,
-    SIZE_IMAGE_WIDTH,
+    SIZE_IMAGE_WIDTH, SUBHEADING_COLOR, TEXT_COLOR,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -48,14 +48,25 @@ impl<'a> Widget for ExperienceWidget<'a> {
                 ui.add_sized(Vec2::new(SIZE_IMAGE_WIDTH, SIZE_IMAGE_HEIGHT), image);
             }
             ui.columns(2, |ui| {
-                ui[0].label(RichText::new(&self.experience.company).strong().underline());
-                ui[1].label(format!(
-                    "{} - {}",
-                    self.experience.start, self.experience.end
-                ));
-                ui[0].label(&self.experience.position);
+                ui[0].label(
+                    RichText::new(&self.experience.company)
+                        .strong()
+                        .underline()
+                        .color(SUBHEADING_COLOR),
+                );
+
+                ui[1].with_layout(egui::Layout::right_to_left(Align::Min), |ui| {
+                    ui.label(
+                        RichText::new(format!(
+                            "{} - {}",
+                            self.experience.start, self.experience.end
+                        ))
+                        .color(SUBHEADING_COLOR),
+                    );
+                });
+                ui[0].label(RichText::new(&self.experience.position).color(SUBHEADING_COLOR));
             });
-            ui.label(self.experience.description.clone());
+            ui.label(RichText::new(self.experience.description.clone()).color(TEXT_COLOR));
             if let Some((url, label)) = &self.experience.link_path {
                 let hyperlink = Hyperlink::from_label_and_url(label, url);
                 if ui.add(hyperlink).clicked() {

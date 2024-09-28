@@ -3,7 +3,7 @@ use egui::{Color32, Image, RichText, Vec2, Widget};
 
 use crate::{
     app::LoadedImages, ContentType, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT,
-    CENTER_GROUP_WIDTH, ICON_SIZE,
+    CENTER_GROUP_WIDTH, HEADING_COLOR, ICON_SIZE, SUBHEADING_COLOR, TEXT_COLOR,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -40,7 +40,12 @@ impl<'a> Widget for InfoWidget<'a> {
             };
             ui.group(|ui| {
                 ui.set_width(CENTER_GROUP_WIDTH);
-                ui.heading(RichText::new("Information").underline().strong());
+                ui.heading(
+                    RichText::new("Information")
+                        .underline()
+                        .strong()
+                        .color(HEADING_COLOR),
+                );
                 ui.columns(3, |ui| {
                     // Social links
                     for (url, name, content_type, image_index) in &self.info.link_paths {
@@ -65,8 +70,8 @@ impl<'a> Widget for InfoWidget<'a> {
                     }
                     // General information
                     for (label, value, image_index) in &self.info.infos {
-                        ui[0].label(label);
-                        ui[1].label(value);
+                        ui[0].label(RichText::new(label).color(SUBHEADING_COLOR));
+                        ui[1].label(RichText::new(value).color(TEXT_COLOR));
                         if let Some(image_index) = image_index {
                             if let Some(image_source) = self.loaded_images.images.get(*image_index)
                             {
@@ -80,11 +85,11 @@ impl<'a> Widget for InfoWidget<'a> {
                         }
                     }
                     // Age
-                    ui[0].label(RichText::new("Age:"));
-                    ui[1].label(RichText::new(format!(
-                        "{}",
-                        calculate_age(self.info.birth_year)
-                    )));
+                    ui[0].label(RichText::new("Age:").color(SUBHEADING_COLOR));
+                    ui[1].label(
+                        RichText::new(format!("{}", calculate_age(self.info.birth_year)))
+                            .color(TEXT_COLOR),
+                    );
                 });
             });
         })

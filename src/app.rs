@@ -1,13 +1,19 @@
+use egui::FontData;
+use egui::FontDefinitions;
+use egui::FontFamily;
+
+use egui::Rounding;
 #[cfg(not(target_arch = "wasm32"))]
 use std::process::Command;
 
-use egui::{global_dark_light_mode_switch, ImageSource, RichText};
+use egui::{ImageSource, RichText};
 use egui_extras::install_image_loaders;
 use uuid::Uuid;
 
+use crate::PRIMARY_ORANGE;
 use crate::{
-    AboutMe, AboutMeWidget, ContentType, Education, EducationWidget, Experience, ExperienceWidget,
-    Info, InfoWidget, Project, ProjectWidget, SIDE_PANEL_WIDTH,
+    constants::*, AboutMe, AboutMeWidget, ContentType, Education, EducationWidget, Experience,
+    ExperienceWidget, Info, InfoWidget, Project, ProjectWidget,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -109,7 +115,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
         });
         experiences.push(Experience {
             company: "Easy Laser".to_string(),
-            position: "Software Developer/Electronics Assembly".to_string(),
+            position: "Software Developer & Electronics Assembly".to_string(),
             start: "2018".to_string(),
             end: "2022".to_string(),
             description: "Worked full time before university, assembling laser based measuring devices. Here I saw how all steps of the supply chain worked, given that everything everything was done in house.\nThroughout studies, I worked part time during summer as software developer".to_string(),
@@ -298,11 +304,53 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         install_image_loaders(ctx);
 
-        egui::TopBottomPanel::top("top_panel")
-            .resizable(false)
-            .show(ctx, |ui| {
-                global_dark_light_mode_switch(ui);
-            });
+        // egui::TopBottomPanel::top("top_panel")
+        //     .resizable(false)
+        //     .show(ctx, |ui| {
+        //global_dark_light_mode_switch(ui);
+
+        let mut fonts = FontDefinitions::default();
+
+        // Install my own font (maybe supporting non-latin characters):
+        fonts.font_data.insert(
+            "my_font".to_owned(),
+            FontData::from_static(include_bytes!("../fonts/FiraCode-Regular.otf")),
+        ); // .ttf and .otf supported
+
+        // Put my font first (highest priority):
+        fonts
+            .families
+            .get_mut(&FontFamily::Proportional)
+            .unwrap()
+            .insert(0, "my_font".to_owned());
+
+        // Put my font as last fallback for monospace:
+        fonts
+            .families
+            .get_mut(&FontFamily::Monospace)
+            .unwrap()
+            .push("my_font".to_owned());
+
+        ctx.set_fonts(fonts);
+
+        // Get current context style
+        let mut style = (*ctx.style()).clone();
+        style.visuals.widgets.noninteractive.bg_stroke.color = PRIMARY_ORANGE;
+        style.visuals.extreme_bg_color = WHITE;
+        style.visuals.panel_fill = BG_COLOR;
+
+        style.visuals.widgets.noninteractive.rounding = Rounding {
+            nw: 10.0,
+            ne: 10.0,
+            sw: 10.0,
+            se: 10.0,
+        };
+        style.visuals.clip_rect_margin = 0.0;
+        style.visuals.hyperlink_color = HYPERLINK_COLOR;
+
+        // Mutate global style with above changes
+        ctx.set_style(style);
+        // });
 
         egui::SidePanel::left("left_panel")
             .exact_width(SIDE_PANEL_WIDTH)
@@ -312,11 +360,21 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                     .id_source("left_scroll_area")
                     .auto_shrink(true)
                     .show(ui, |ui| {
-                        ui.heading(RichText::new("Education").underline().strong());
+                        ui.heading(
+                            RichText::new("Education")
+                                // .underline()
+                                .strong()
+                                .color(HEADING_COLOR),
+                        );
                         for education in &self.educations {
                             ui.add(EducationWidget::new(education, &self.images));
                         }
-                        ui.heading(RichText::new("Experiences").underline().strong());
+                        ui.heading(
+                            RichText::new("Experiences")
+                                // .underline()
+                                .strong()
+                                .color(HEADING_COLOR),
+                        );
                         for experience in &self.experiences {
                             ui.add(ExperienceWidget::new(experience, &self.images));
                         }
@@ -331,7 +389,12 @@ impl<'a> eframe::App for PersonalPortfolio<'a> {
                     .id_source("right_scroll_area")
                     .auto_shrink(false)
                     .show(ui, |ui| {
-                        ui.heading(RichText::new("Projects").underline().strong());
+                        ui.heading(
+                            RichText::new("Projects")
+                                // .underline()
+                                .strong()
+                                .color(HEADING_COLOR),
+                        );
                         for project in &self.projects {
                             ui.add(ProjectWidget::new(project, &self.images));
                         }

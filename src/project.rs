@@ -3,7 +3,7 @@ use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
 use crate::{
     app::{open_pdf, LoadedImages},
     ContentType, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_HEIGHT,
-    SIZE_IMAGE_WIDTH,
+    SIZE_IMAGE_WIDTH, SUBHEADING_COLOR, TEXT_COLOR, TOOL_COLOR,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -49,17 +49,21 @@ impl<'a> Widget for ProjectWidget<'a> {
                 }
             }
 
-            // egui::ScrollArea::vertical()
-            //     .id_source(format!("{}", self.project.uuid))
-            //     .auto_shrink(true)
-            //     .show(ui, |ui| {
-            ui.label(RichText::new(&self.project.title).strong().underline());
-            ui.label(self.project.description.clone());
+            ui.label(
+                RichText::new(&self.project.title)
+                    .strong()
+                    .underline()
+                    .color(SUBHEADING_COLOR),
+            );
+            ui.label(RichText::new(self.project.description.clone()).color(TEXT_COLOR));
             ui.horizontal(|ui| {
                 for (url, name, content_type) in &self.project.link_paths {
                     match content_type {
                         ContentType::Pdf => {
-                            if ui.add(Hyperlink::from_label_and_url(name, url)).clicked() {
+                            if ui
+                                .add(Hyperlink::from_label_and_url(RichText::new(name), url))
+                                .clicked()
+                            {
                                 open_pdf(url.to_string());
                             }
                         }
@@ -78,8 +82,7 @@ impl<'a> Widget for ProjectWidget<'a> {
                 tool_string.push_str(tool.as_str());
                 tool_string.push_str("  ");
             }
-            ui.label(RichText::new(tool_string).strong());
-            // });
+            ui.label(RichText::new(tool_string).strong().color(TOOL_COLOR));
         })
         .response
     }

@@ -1,9 +1,9 @@
-use egui::{Color32, Hyperlink, Image, RichText, Vec2, Widget};
+use egui::{Align, Color32, Hyperlink, Image, RichText, Vec2, Widget};
 
 use crate::{
     app::{open_pdf, LoadedImages},
     BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, GROUP_WIDTH, SIZE_IMAGE_HEIGHT,
-    SIZE_IMAGE_WIDTH,
+    SIZE_IMAGE_WIDTH, SUBHEADING_COLOR, TEXT_COLOR,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -52,17 +52,24 @@ impl<'a> Widget for EducationWidget<'a> {
             ui.label(
                 RichText::new(&self.education.university)
                     .strong()
-                    .underline(),
+                    .underline()
+                    .color(SUBHEADING_COLOR),
             );
             ui.columns(2, |ui| {
-                ui[0].label(RichText::new(&self.education.degree).italics());
-                ui[1].label(RichText::new(&self.education.grade_score).strong())
+                ui[0].label(RichText::new(&self.education.degree).color(SUBHEADING_COLOR));
+                ui[1].with_layout(egui::Layout::right_to_left(Align::Min), |ui| {
+                    ui.label(
+                        RichText::new(&self.education.grade_score)
+                            .strong()
+                            .color(SUBHEADING_COLOR),
+                    )
+                });
             });
             egui::ScrollArea::vertical()
                 .id_source(format!("{}", self.education.uuid))
                 .auto_shrink(true)
                 .show(ui, |ui| {
-                    ui.label(self.education.description.clone());
+                    ui.label(RichText::new(self.education.description.clone()).color(TEXT_COLOR));
                 });
             if let Some(url) = &self.education.academic_record_path {
                 if ui

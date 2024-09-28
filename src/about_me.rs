@@ -2,7 +2,7 @@ use egui::{Color32, Image, RichText, Vec2, Widget};
 
 use crate::{
     app::LoadedImages, BG_COLOR_SCALING_DARK, BG_COLOR_SCALING_LIGHT, CENTER_GROUP_WIDTH,
-    SIZE_IMAGE_WIDTH,
+    HEADING_COLOR, SIZE_IMAGE_WIDTH, TEXT_COLOR,
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
@@ -43,7 +43,11 @@ impl<'a> Widget for AboutMeWidget<'a> {
                         .shrink_to_fit()
                         .bg_fill(Color32::from_additive_luminance(bg_fill));
                     ui.add(image);
-                    ui.heading(RichText::new(self.about_me.description[0].0.clone()).strong());
+                    ui.heading(
+                        RichText::new(self.about_me.description[0].0.clone())
+                            .strong()
+                            .color(HEADING_COLOR),
+                    );
                 }
                 egui::Grid::new("about_me_grid")
                     .max_col_width(CENTER_GROUP_WIDTH * 0.7)
@@ -51,7 +55,7 @@ impl<'a> Widget for AboutMeWidget<'a> {
                     .show(ui, |ui| {
                         for (index, description) in self.about_me.description.iter().enumerate() {
                             if index != 0 {
-                                ui.label(RichText::new(description.0.clone()));
+                                ui.label(RichText::new(description.0.clone()).color(TEXT_COLOR));
                             }
                             if description.1.is_some() {
                                 if let Some(image_source) =
