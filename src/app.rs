@@ -56,6 +56,8 @@ impl<'a> Default for LoadedImages<'a> {
         let legonization = egui::include_image!("../assets/legonization.png");
         let dncnn = egui::include_image!("../assets/dncnn.png");
         let gameoflife = egui::include_image!("../assets/gameoflife.png");
+        let thirdact = egui::include_image!("../assets/thirdact.png");
+        let tabapp = egui::include_image!("../assets/tabapp.png");
         let mut images = Vec::new();
         images.push(saab); // 0
         images.push(liu); // 1
@@ -74,6 +76,8 @@ impl<'a> Default for LoadedImages<'a> {
         images.push(legonization); // 14
         images.push(dncnn); // 15
         images.push(gameoflife); // 16
+        images.push(thirdact); // 17
+        images.push(tabapp); // 18
         LoadedImages { images }
     }
 }
@@ -82,12 +86,24 @@ impl<'a> Default for PersonalPortfolio<'a> {
     fn default() -> Self {
         let mut experiences: Vec<Experience> = Vec::new();
         experiences.push(Experience {
+            company: "Third Act".to_string(),
+            position: "Rust Backend Developer".to_string(),
+            start: "November 2024".to_string(),
+            end: "Current".to_string(),
+            description:
+                "Developing backend software, mostly for web applications, using the Rust programming language. Includes working with APIs and the Azure suite of tools."
+                    .to_string(),
+            image_index: 17,
+            link_path: None,
+            uuid: Uuid::new_v4(),
+        });
+        experiences.push(Experience {
             company: "Saab AB".to_string(),
             position: "Software Engineer".to_string(),
             start: "June 2024".to_string(),
-            end: "Current".to_string(),
+            end: "November 2024".to_string(),
             description:
-                "Maintaining and developing software used in some of Saab's underwater products."
+                "Maintained and developed software used in some of Saab's underwater products."
                     .to_string(),
             image_index: 0,
             link_path: None,
@@ -142,7 +158,7 @@ impl<'a> Default for PersonalPortfolio<'a> {
             description: "A degree similar to computer science, with stronger emphasis on the math and coding of computer graphics.\nIn 2024, I received a scholarship for academic performance.".to_string(),
             grade_score: "4.17/5.0".to_string(),
             image_index: 1,
-            academic_record_path: Some("assets/Intyg.pdf".to_string()),
+            academic_record_path: Some("assets/examensbevis.pdf".to_string()),
             uuid: Uuid::new_v4(),
         });
         let mut projects = Vec::new();
@@ -156,6 +172,17 @@ impl<'a> Default for PersonalPortfolio<'a> {
                 "C++".to_string(),
                 "MR".to_string(),
                 "Android".to_string(),
+            ],
+            uuid: Uuid::new_v4(),
+        });
+        projects.push(Project {
+            title: "Guitar Tablature Parser and Player".to_string(),
+            description: "Many people that play the Guitar find Guitar tablature very useful, as traditional musical notation can unncessarily hard to learn if you only care about playing the Guitar. This program parses MusicXML files, a widely used musical notation format for any instrument, into Guitar tablature and lets you play back what the song is meant to sound like. It uses the Karplus-Strong algorithm to let you tune you guitar sound the way you like. The idea behind this is that for quality musical notation, it is often easier to find the the MusicXML file for, let's say Piano, than a good Guitar tablature. By parsing the MusicXML for Piano and other instruments to Guitar, this broadens the scope for guitarists, when looking for tablature.".to_string(),
+            link_paths: vec![("https://rasmushogslatt.github.io/cdefgab/".to_string(), "Application".to_string(), ContentType::Link), ("https://github.com/RasmusHogslatt/cdefgab".to_string(), "Github".to_string(), ContentType::Link)],
+            image_index: Some(18),
+            tools: vec![
+                "Rust".to_string(),
+                "Audio".to_string(),
             ],
             uuid: Uuid::new_v4(),
         });
